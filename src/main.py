@@ -9,6 +9,9 @@ from mediapipe.tasks.python.vision.hand_landmarker import (
   HandLandmarkerResult,
 )
 import time
+import os
+from pathlib import Path
+from gestures.config import load_config
 
 def create_landmarker() -> HandLandmarker:
   options = mp.tasks.vision.HandLandmarkerOptions(
@@ -93,6 +96,14 @@ def main(argv: Sequence[str] | None = None) -> None:
   parser = argparse.ArgumentParser(description="Coordinator of your workspaces")
   parser.add_argument("--live-visual", action="store_true")
   args = parser.parse_args(argv)
+
+  config_home = os.environ.get("XDG_CONFIG_HOME")
+  if config_home and Path(config_home).is_absolute:
+    config_root = Path(config_home)
+  else:
+    config_root = Path.home() / ".config"
+  cordie_file = config_root / "cordie" / "cordie.toml"
+  config = load_config(cordie_file)
 
   if args.live_visual:
     show_webcam()
